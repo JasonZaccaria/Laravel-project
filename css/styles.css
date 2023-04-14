@@ -1,0 +1,29 @@
+/* Please write your CSS in custom.css */
+
+* {
+  transition: all 250ms ease-in-out;
+  box-sizing: border-box;
+}
+
+@font-face {
+  font-family: 'SharpSans';
+  src: url("../assets_from_client/fonts/SharpSans-No1-Medium.otf");
+  font-weight: normal;
+}
+
+@font-face {
+  font-family: 'SharpSansBold';
+  src: url("../assets_from_client/fonts/SharpSans-No1-Black.otf");
+}
+
+html,
+body {
+  font-family: 'SharpSans';
+}
+
+.invalid {
+  border: 1px solid red;
+  outline-color: red;
+}
+
+/* --------- */

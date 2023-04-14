@@ -1,0 +1,143 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XYZ - Registration</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/custom.css">
+    <script src="js/jquery.min.js"></script>
+    <script src="js/vue.min.js"></script>
+    <script src="js/login.js"></script>
+    <script src="js/scripts.js"></script>
+</head>
+<body>
+    <h1 id="register-title">REGISTER</h1>
+    <div id="app" v-cloak>
+		
+		<!-- Login / Register Toggles -->
+      <div class="actions">
+        <button id="sign-in-id" :class='[{ active: isDisabled("signin") }]' @click='setView("signin")'>SIGN IN
+        </button>
+        <button id="register-id" :class='[{ active: isDisabled("register") }]' @click='setView("register")'>REGISTER
+        </button>
+      </div>
+
+      <!--Logo-->
+      <img src="./assets_from_client/assets/WSJ_Horizontal.png" id="wsj-logo">
+		
+		<!-- Screens -->
+      <transition name='form' mode='out-in'>
+        <keep-alive>
+          <component :feedback='feedback' :is="currentComponent" @register-form='handleForm' @signin-form='handleForm'></component>
+        </keep-alive>
+      </transition>
+  
+    </div>
+  
+    <!-- Sign Up  -->
+    <template id="signUp">
+      <form @submit.prevent='onSubmit' ref='form' action="" class='register-form'>
+        <h2 id="new-account-title">NEW ACCOUNT</h2>
+        <div class="form-group">
+          <label for="firstname">First Name</label>
+          <input required type="text" v-model.trim='user.firstname' id='firstname' class="register-input-styling" placeholder="first name">
+        </div>
+        <div class="form-group">
+          <label for="lastname">Last Name</label>
+          <input required type="text" v-model.trim='user.lastname' id='lastname'  class="register-input-styling" placeholder="last name">
+        </div>
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input required type="email" v-model.trim='user.email' id='email' class="register-input-styling" placeholder="email">
+        </div>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input required type="password" v-model='user.password' placeholder="password" id='password' class="register-input-styling" v-bind:class="[ user.password.length != 0 && user.password != user.passwordCheck ? 'invalid' : 'valid' ]">
+        </div>
+        <div class="form-group">
+          <label for="passwordcheck">Confirm Password</label>
+          <input required type="password" v-model='user.passwordCheck' placeholder="confirm password" id='passwordcheck' class="register-input-styling" v-bind:class="[ user.password != user.passwordCheck ? 'invalid' : 'valid' ]">
+        </div>
+        <div class="bottom-section">
+          <input id="submit-button" type="submit" :disabled='!isFormValid' value='Register'>
+          <div id="triangle"></div>
+        </div>
+      </form>
+    </template>
+  
+    <!-- Sign In  -->
+    <template id="signinIn">
+      <form ref='form' @submit.prevent='handleForm' action="" class='signin-form'>
+        <h2 id="sign-in-title">SIGN IN</h2>
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input required v-model='user.email' type="email" id='email' class="sign-in-inputs" placeholder="email">
+        </div>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input required v-model='user.password' type="password" id='password' class="sign-in-inputs" placeholder="password">
+        </div>
+        <div class="sign-in-bottom">
+          <input id="sign-in-submit-button" :disabled='!isFormValid' type="submit" value="SIGN IN">
+          <div id="triangle-sign-in"></div>
+        </div>
+      </form>
+    </template>
+  
+    <!-- Success Message -->
+    <template id="loginFeedback">
+      <!-- 
+        Easter egg! 
+        
+        When a user has successfully registered or signed up, 
+        there is a third feedback screen which is not included
+        in the mock ups. Please style these screens so they align 
+        with the rest of the designs.
+      -->
+      <div class="feedback" :key="componentKey">
+        <header id="feedback-header-id">
+          <h2>{{ title }}</h2>
+        </header>
+        <div v-if='feedback.type === "register"'>
+          <h3>Welcome <strong>{{ feedback.data | name }}</strong>!</h3>
+			    <p>You may now sign in.</p>
+          <p>Please check the email address provided - {{feedback.data | email}} - to complete your registration.</p>
+        </div>
+        <div v-else-if='feedback.type === "signinerror"' class="failed-container">
+          <h2 class="failed-login">log in failed</h2>
+          <div class="failed-login-triangle"></div>
+        </div>
+        <div v-else>
+          <div class="blog-container">
+            <div class="blog-container-hidden">
+              <form ref="form" @submit.prevent='createBlogPost' class="blog-form">
+                <label class="feedback-labels">Blog title</label>
+                <input required v-model='blog.title' type="text" id='blog-title' class="blog-inputs" placeholder="title">
+                <label class="feedback-labels">Blog Post</label>
+                <textarea required v-model='blog.data' id='blog-data' class="blog-inputs" placeholder="Blog"></textarea>
+                <input type="submit" id="blog-button" value="create">
+              </form>
+            </div>
+            <div class="blog-list">
+              <ul id="blog-list-id">
+                <li v-for="blog in blogs" :id="[blog.id]">
+                  {{blog.title}}
+                  <textarea>{{blog.content}}</textarea>
+                  <div id="blog-content-area">
+                    <form ref="form" @submit.prevent="editBlogPost" class="blog-buttons">
+                      <input type="submit" value="save changes" class="feedback-button">
+                    </form>
+                    <form ref="form" @submit.prevent='deleteBlogPost' class="blog-buttons" :id="[blog.id + blog.userEmail]">
+                      <input type="submit" value="X" class="feedback-delete">
+                    </form>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </template>
+  </body>
+</html>
